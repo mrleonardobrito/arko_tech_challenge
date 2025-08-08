@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Empresas - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col">
+        <h2>Empresas</h2>
+        <div class="table-responsive">
+            <table class="table table-striped" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>CNPJ</th>
+                        <th>Razão Social</th>
+                        <th>Distrito</th>
+                        <th>Cidade</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" class="text-center">Carregando...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav aria-label="Navegação de página">
+            <div id="pagination"></div>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/api.js' %}"></script>
+<script src="{% static 'js/companies.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4">Bem-vindo ao Arko Tech Challenge</h1>
+    <p class="lead">Explore os dados de estados, municípios, distritos e empresas.</p>
+    
+    <div class="row mt-5">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Estados</h5>
+                    <p class="card-text">Lista de estados brasileiros</p>
+                    <a href="{% url 'state_list' %}" class="btn btn-primary">Ver Estados</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Municípios</h5>
+                    <p class="card-text">Lista de municípios por estado</p>
+                    <a href="{% url 'city_list' %}" class="btn btn-primary">Ver Municípios</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Distritos</h5>
+                    <p class="card-text">Lista de distritos por município</p>
+                    <a href="{% url 'district_list' %}" class="btn btn-primary">Ver Distritos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Empresas</h5>
+                    <p class="card-text">Lista de empresas cadastradas</p>
+                    <a href="{% url 'company_list' %}" class="btn btn-primary">Ver Empresas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
