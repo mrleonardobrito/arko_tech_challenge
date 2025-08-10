@@ -17,7 +17,7 @@ function renderTable(cities) {
       .map(
         (city) => `
         <tr>
-            <td>${city.name}</td>
+            <td>${city.name || "-"}</td>
             <td>${city.state.name} (${city.state.acronym})</td>
         </tr>
     `

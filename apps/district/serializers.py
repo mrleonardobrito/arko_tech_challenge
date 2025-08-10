@@ -12,12 +12,10 @@ class DistrictSerializer(serializers.ModelSerializer):
     - id: Identificador único do bairro
     - name: Nome do bairro
     - city: Chave estrangeira para a cidade à qual o bairro pertence
-    - created_at: Data de criação do registro
-    - updated_at: Data da última atualização
     """
     class Meta:
         model = District
-        fields = ['id', 'name', 'city', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'city']
         swagger_schema_fields = {
             "title": "Bairro",
             "description": "Representa um bairro de uma cidade"

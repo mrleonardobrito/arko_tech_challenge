@@ -2,3 +2,4 @@
 __pycache__/
 .env
 staticfiles/
+go_modules/data_extractor/data/

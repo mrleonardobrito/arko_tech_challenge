@@ -17,9 +17,11 @@ function renderTable(districts) {
       .map(
         (district) => `
         <tr>
-            <td>${district.name}</td>
-            <td>${district.city.name}</td>
-            <td>${district.city.state.name} (${district.city.state.acronym})</td>
+            <td>${district.name || "-"}</td>
+            <td>${district.city.name || "-"}</td>
+            <td>${district.city.state.name || "-"} (${
+          district.city.state.acronym || "-"
+        })</td>
         </tr>
     `
       )

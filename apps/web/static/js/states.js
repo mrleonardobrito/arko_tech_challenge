@@ -17,8 +17,8 @@ function renderTable(states) {
       .map(
         (state) => `
         <tr>
-            <td>${state.name}</td>
-            <td>${state.acronym}</td>
+            <td>${state.name || "-"}</td>
+            <td>${state.acronym || "-"}</td>
         </tr>
     `
       )

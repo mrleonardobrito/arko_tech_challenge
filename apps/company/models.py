@@ -1,21 +1,16 @@
 from django.db import models
-
 # Create your models here.
 
 
 class Company(models.Model):
-    cnpj = models.CharField(max_length=8, unique=True)
-    social_name = models.CharField(max_length=255)
-    juridical_nature = models.CharField(max_length=4)
-    responsible_qualification = models.CharField(max_length=2)
-    social_capital = models.DecimalField(max_digits=15, decimal_places=2)
-    company_size = models.CharField(max_length=2)
-    federative_entity = models.CharField(max_length=4)
-    state = models.ForeignKey('state.State', on_delete=models.CASCADE)
-    city = models.ForeignKey('city.City', on_delete=models.CASCADE)
-    district = models.ForeignKey('district.District', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    cnpj = models.CharField(max_length=8, unique=True, null=True)
+    social_name = models.CharField(max_length=255, null=True)
+    juridical_nature = models.CharField(max_length=4, null=True)
+    responsible_qualification = models.CharField(max_length=2, null=True)
+    social_capital = models.DecimalField(
+        max_digits=15, decimal_places=2, null=True)
+    company_size = models.CharField(max_length=2, null=True)
+    federative_entity = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return self.social_name
