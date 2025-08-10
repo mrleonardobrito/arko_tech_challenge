@@ -127,6 +127,8 @@ A documentação completa da API está disponível em:
 - ReDoc: `/api/redoc/`
 - OpenAPI Schema: `/api/schema/`
 
+<img width="1906" height="990" alt="image" src="https://github.com/user-attachments/assets/1f899e21-9e4a-4997-a458-29a9e7fa2630" />
+
 ## Interface Web
 
 O projeto também inclui uma interface web simples para visualização dos dados:
@@ -135,6 +137,8 @@ O projeto também inclui uma interface web simples para visualização dos dados
 - Cidades: `/cidades/`
 - Distritos: `/distritos/`
 - Empresas: `/empresas/`
+
+<img width="1919" height="991" alt="image" src="https://github.com/user-attachments/assets/06aafb77-91f9-4522-a584-f137be72fde2" />
 
 ## Comandos Úteis
 
