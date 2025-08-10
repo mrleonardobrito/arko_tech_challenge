@@ -57,12 +57,12 @@ func main() {
 	ctx := context.Background()
 	log.Println("Starting data extraction")
 
-	companyZipUrl := getEnv("COMPANY_ZIP_URL", "https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/2025-05/Empresas0.zip")
+	companyZipUrl := getEnv("COMPANY_ZIP_URL", "")
 	companyStoragePath := getEnv("COMPANY_STORAGE_PATH", "data")
 	companyZipPath := filepath.Join(companyStoragePath, "companies.zip")
 	extractPath := filepath.Join(companyStoragePath, "extracted")
-	databaseUrl := getEnv("DATABASE_URL", "postgresql://admin:1234567@localhost:5437/arko_tech_challenge")
-	locationUrl := getEnv("LOCATION_API_URL", "https://servicodados.ibge.gov.br/api/v1/localidades")
+	databaseUrl := getEnv("DATABASE_URL", "")
+	locationUrl := getEnv("LOCATION_API_URL", "")
 
 	stateLocationUrl := fmt.Sprintf("%s/estados", locationUrl)
 	cityLocationUrl := fmt.Sprintf("%s/municipios", locationUrl)

@@ -40,6 +40,11 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
+
+COMPANY_ZIP_URL="https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/2025-05/Empresas0.zip"
+COMPANY_STORAGE_PATH=data
+DATABASE_URL="postgresql://admin:1234567@localhost:5432/arko_tech_challenge"
+LOCATION_API_URL="https://servicodados.ibge.gov.br/api/v1/localidades"
 ```
 
 ## Executando o Projeto
@@ -138,6 +143,43 @@ O projeto também inclui uma interface web simples para visualização dos dados
 - `python manage.py migrate`: Executa migrações pendentes
 - `python manage.py createsuperuser`: Cria um usuário administrador
 - `python manage.py collectstatic`: Coleta arquivos estáticos
+
+## Extração e Atualização de Dados
+
+O projeto utiliza um sistema de upsert (update + insert) para manter os dados atualizados. com golang e goroutines O processo funciona da seguinte forma:
+
+1. **Estados**:
+
+   - Dados são obtidos da API do IBGE
+   - Inserção usando `ON CONFLICT (id) DO UPDATE`
+   - Atualiza nome e sigla se o estado já existir
+
+2. **Cidades**:
+
+   - Dados são obtidos da API do IBGE
+   - Inserção usando `ON CONFLICT (id) DO UPDATE`
+   - Atualiza nome e estado_id se a cidade já existir
+   - Verifica se o estado existe antes de inserir/atualizar
+
+3. **Distritos**:
+
+   - Dados são obtidos da API do IBGE
+   - Inserção usando `ON CONFLICT (id) DO UPDATE`
+   - Atualiza nome e cidade_id se o distrito já existir
+   - Verifica se a cidade existe antes de inserir/atualizar
+
+4. **Empresas**:
+   - Dados são obtidos do arquivo CSV da Receita Federal
+   - Inserção usando `ON CONFLICT (cnpj) DO UPDATE`
+   - Atualiza todos os campos exceto CNPJ se a empresa já existir
+
+Esse processo é feito utilizando batch processing e paralelização, utilize o comando `make db-up` para rodar o banco junto com o algoritmo de extração dos dados
+O processo de upsert garante que:
+
+- Dados não são duplicados
+- Registros existentes são atualizados com novas informações
+- Integridade referencial é mantida (estados -> cidades -> distritos)
+- Operação é idempotente (pode ser executada múltiplas vezes com o mesmo resultado)
 
 ## Tratamento de Erros
 
