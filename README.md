@@ -64,7 +64,7 @@ Este comando irá:
 2. Execute o servidor de desenvolvimento:
 
 ```bash
-python manage.py runserver
+make run
 ```
 
 O servidor estará disponível em `http://localhost:8000`.
