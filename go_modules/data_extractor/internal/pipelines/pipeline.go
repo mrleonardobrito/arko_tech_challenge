@@ -13,8 +13,19 @@ import (
 	"github.com/arko_tech_challenge/go_modules/data_extractor/internal"
 )
 
-func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher internal.Batcher[T], db internal.Sink[T]) error {
+func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher *internal.Batcher[T], db internal.Sink[T]) error {
 	defer func() { _ = src.Close() }()
+
+	if batcher == nil {
+		log.Println("Executando pipeline sem batching...")
+		err := db.WriteBatch(ctx, nil)
+		if err != nil {
+			log.Printf("Pipeline error: %v", err)
+			return err
+		}
+		log.Println("Pipeline concluída sem batching")
+		return nil
+	}
 
 	ticker := time.NewTicker(200 * time.Millisecond)
 	defer ticker.Stop()
@@ -25,7 +36,7 @@ func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher int
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				log.Println(batcher.Progress())
+				log.Println((*batcher).Progress())
 			}
 		}
 	}()
@@ -53,7 +64,7 @@ func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher int
 						}
 						return
 					}
-					batcher.AddUpsertedBatch()
+					(*batcher).AddUpsertedBatch()
 				}
 			}
 		}(i)
@@ -78,7 +89,7 @@ func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher int
 				return
 			}
 
-			ready, batch, err := batcher.Push(ctx, in)
+			ready, batch, err := (*batcher).Push(ctx, in)
 			if err != nil {
 				errChan <- fmt.Errorf("error pushing to batcher: %w", err)
 				return
@@ -92,7 +103,7 @@ func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher int
 			}
 		}
 
-		remaining, err := batcher.Flush(ctx)
+		remaining, err := (*batcher).Flush(ctx)
 		if err != nil {
 			errChan <- fmt.Errorf("error flushing batcher: %w", err)
 			return
@@ -113,11 +124,13 @@ func RunPipeline[T any](ctx context.Context, src internal.Source[T], batcher int
 
 	select {
 	case err := <-errChan:
+		log.Printf("Pipeline error: %v", err)
 		return err
 	case <-doneChan:
-		log.Println(batcher.Progress())
+		log.Println("Pipeline concluída:", (*batcher).Progress())
 		return nil
 	case <-ctx.Done():
+		log.Println("Pipeline cancelada pelo contexto")
 		return ctx.Err()
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -17,6 +18,7 @@ type ConflictMode string
 const (
 	ConflictModeUpdate ConflictMode = "update"
 	ConflictModeIgnore ConflictMode = "ignore"
+	CopyMode           ConflictMode = "copy"
 )
 
 type TableSpec struct {
@@ -25,6 +27,7 @@ type TableSpec struct {
 	ConflictMode   ConflictMode
 	ConflictColumn string
 	UpdateColumns  []string
+	CSVFilePath    string // Caminho para o arquivo CSV quando usando CopyMode
 }
 
 type PGOptions struct {
@@ -55,6 +58,10 @@ func NewPostgresRepository[T any](pool *pgxpool.Pool, spec TableSpec, encoder DB
 }
 
 func (p *Postgres[T]) WriteBatch(ctx context.Context, batch []T) error {
+	if p.spec.ConflictMode == CopyMode {
+		return p.copyFromCSV(ctx)
+	}
+
 	if len(batch) == 0 {
 		log.Printf("Skipping empty batch")
 		return nil
@@ -158,4 +165,65 @@ func (p *Postgres[T]) upsertBatch(ctx context.Context, batch []T) error {
 	}
 
 	return nil
+}
+
+func (p *Postgres[T]) copyFromCSV(ctx context.Context) error {
+	if p.spec.CSVFilePath == "" {
+		return fmt.Errorf("CSV file path not specified for copy mode")
+	}
+
+	ctxTx := ctx
+	if p.options.TxTimeout > 0 {
+		var cancel context.CancelFunc
+		ctxTx, cancel = context.WithTimeout(ctx, p.options.TxTimeout)
+		defer cancel()
+	}
+
+	tx, err := p.pool.BeginTx(ctxTx, pgx.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("error starting transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+	copySQL := fmt.Sprintf(
+		"COPY %s (%s) FROM STDIN WITH (FORMAT csv, DELIMITER ';', HEADER true)",
+		p.spec.Name,
+		strings.Join(p.spec.Columns, ", "),
+	)
+
+	file, err := os.Open(p.spec.CSVFilePath)
+	if err != nil {
+		return fmt.Errorf("error opening CSV file: %w", err)
+	}
+	defer file.Close()
+
+	fileInfo, err := file.Stat()
+	if err == nil {
+		fileSize := fileInfo.Size()
+		log.Printf("Processing CSV file: %s (%.2f MB)", p.spec.CSVFilePath, float64(fileSize)/(1024*1024))
+	}
+
+	log.Printf("Starting COPY FROM operation...")
+	start := time.Now()
+	_, err = tx.Conn().PgConn().CopyFrom(ctx, file, copySQL)
+	duration := time.Since(start)
+
+	if err == nil {
+		log.Printf("COPY FROM completed successfully in %v", duration)
+	}
+	if err != nil {
+		log.Printf("Error executing COPY FROM: %v", err)
+		return fmt.Errorf("error executing COPY FROM: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		log.Printf("Error committing transaction: %v", err)
+		return fmt.Errorf("error committing transaction: %w", err)
+	}
+
+	log.Printf("Successfully copied data from CSV file: %s", p.spec.CSVFilePath)
+	return nil
+}
+
+func (p *Postgres[T]) GetConflictMode() ConflictMode {
+	return p.spec.ConflictMode
 }

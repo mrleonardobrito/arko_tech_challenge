@@ -54,7 +54,7 @@ func RunStatesPipeline(ctx context.Context, pool *pgxpool.Pool, apiUrl string, b
 		TxTimeout: 10 * time.Second,
 	})
 
-	return RunPipeline(ctx, src, batcher, db)
+	return RunPipeline(ctx, src, &batcher, db)
 }
 
 type City struct {
@@ -150,7 +150,7 @@ func RunCitiesPipeline(ctx context.Context, pool *pgxpool.Pool, apiUrl string, b
 		TxTimeout: 10 * time.Second,
 	})
 
-	return RunPipeline(ctx, src, batcher, db)
+	return RunPipeline(ctx, src, &batcher, db)
 }
 
 type District struct {
@@ -235,5 +235,5 @@ func RunDistrictsPipeline(ctx context.Context, pool *pgxpool.Pool, apiUrl string
 		TxTimeout: 10 * time.Second,
 	})
 
-	return RunPipeline(ctx, src, batcher, db)
+	return RunPipeline(ctx, src, &batcher, db)
 }

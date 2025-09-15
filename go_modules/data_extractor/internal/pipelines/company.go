@@ -104,19 +104,17 @@ func RunCompaniesPipeline(ctx context.Context, pool *pgxpool.Pool, downloadUrl, 
 	}, itemCount)
 	defer src.Close()
 
-	batcher := internal.NewFixedSizeBatcher[Company](batchSize, src.ItemCount())
 	encoder := NewCompanyEncoder(pool)
 	tableSpec := internal.TableSpec{
-		Name:           "company",
-		Columns:        []string{"cnpj", "social_name", "juridical_nature", "responsible_qualification", "social_capital", "company_size", "federative_entity"},
-		ConflictMode:   internal.ConflictModeUpdate,
-		ConflictColumn: "cnpj",
-		UpdateColumns:  []string{"social_name", "juridical_nature", "responsible_qualification", "social_capital", "company_size", "federative_entity"},
+		Name:         "company",
+		Columns:      []string{"cnpj", "social_name", "juridical_nature", "responsible_qualification", "social_capital", "company_size", "federative_entity"},
+		ConflictMode: internal.CopyMode,
+		CSVFilePath:  csvPath,
 	}
 	db := internal.NewPostgresRepository(pool, tableSpec, encoder, internal.PGOptions{
 		TxTimeout: 10 * time.Second,
 	})
-	return RunPipeline(ctx, src, batcher, db)
+	return RunPipeline(ctx, src, nil, db)
 }
 
 func convertToCSV(inputPath, outputPath string, headers []string, limit int) (int, error) {

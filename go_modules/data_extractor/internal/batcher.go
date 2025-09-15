@@ -17,8 +17,14 @@ type FixedSizeBatcher[T any] struct {
 func (b *FixedSizeBatcher[T]) Progress() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	progress := float64(b.upsertedBatches) / float64(b.totalBatches) * 100
-	return fmt.Sprintf("%.2f%% (%d/%d batches)", progress, b.upsertedBatches, b.totalBatches)
+
+	actualTotal := b.totalBatches
+	if b.upsertedBatches > b.totalBatches {
+		actualTotal = b.upsertedBatches
+	}
+
+	progress := float64(b.upsertedBatches) / float64(actualTotal) * 100
+	return fmt.Sprintf("%.2f%% (%d/%d batches)", progress, b.upsertedBatches, actualTotal)
 }
 
 func (b *FixedSizeBatcher[T]) AddUpsertedBatch() {
@@ -28,9 +34,14 @@ func (b *FixedSizeBatcher[T]) AddUpsertedBatch() {
 }
 
 func NewFixedSizeBatcher[T any](batchSize int, totalItems int) Batcher[T] {
+	totalBatches := totalItems / batchSize
+	if totalItems%batchSize != 0 {
+		totalBatches++
+	}
+
 	return &FixedSizeBatcher[T]{
 		batchSize:       batchSize,
-		totalBatches:    totalItems / batchSize,
+		totalBatches:    totalBatches,
 		upsertedBatches: 0,
 	}
 }
