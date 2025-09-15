@@ -1,4 +1,4 @@
-PY ?= python
+PY ?= .venv/bin/python
 DJANGO ?= $(PY) manage.py
 GO ?= go
 EXTRACTOR ?= cd go_modules/data_extractor && $(GO) run cmd/main.go
