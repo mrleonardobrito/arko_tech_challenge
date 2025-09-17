@@ -22,56 +22,46 @@
 </head>
 <body>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.js"></script>
     <div id="app">
         <nav class="app-header bg-white border-bottom">
           <div class="container d-flex align-items-center gap-3 py-2">
-            <p class="fw-semibold m-0 text-decoration-none" @click="onMenuClick(homeUrl)" focus-visible="false">Arko Tech Challenge</p>
+            <router-link to="/" class="fw-semibold m-0 text-decoration-none text-dark">Arko Tech Challenge</router-link>
             <div class="ms-auto">
               <nav class="d-flex gap-2 align-items-center justify-content-end">
-                <p v-for="item in tabs" :key="item.url" v-text="item.label" @click="onMenuClick(item.url)" class="btn m-0 btn-md tab-btn" :class="{ 'is-active': isActive(item.url) }"></p>
+                <router-link 
+                  v-for="item in tabs" 
+                  :key="item.path" 
+                  :to="item.path" 
+                  class="btn m-0 btn-md tab-btn"
+                  active-class="is-active"
+                  >
+                    <span v-text="item.label"></span>
+                </router-link>
               </nav>
             </div>
           </div>
         </nav>
+        <main class="flex-fill container py-3">
+          <router-view></router-view>
+        </main>
     </div>
-    <main class="flex-fill container py-3">
-      {% block content %}{% endblock %}
-    </main>
     <script>
       const { createApp, ref } = Vue;
-
-      const config = {
-        setup() {
-          const homeUrl = '{% url "home" %}';
-          const tabs = ref([
-            { label: 'Estados', url: '{% url "state_list" %}' },
-            { label: 'Cidades', url: '{% url "city_list" %}' },
-            { label: 'Distritos', url: '{% url "district_list" %}' },
-            { label: 'Empresas', url: '{% url "company_list" %}' }
-          ]);
-
-          const currentPath = ref(window.location.pathname);
-
-          const isActive = (url) => {
-            try {
-              const path = new URL(url, window.location.origin).pathname;
-              return currentPath.value === path || currentPath.value.startsWith(path);
-            } catch (e) {
-              return currentPath.value === url || currentPath.value.startsWith(url);
-            }
-          }
-
-          const onMenuClick = (url) => {
-            window.location.href = url;
-          }
-
-          return { homeUrl, tabs, onMenuClick, isActive };
-        }
-      }
-
-      const app = createApp(config);
-      app.mount('#app');
+      const { createRouter, createWebHistory } = VueRouter;
     </script>
+    
+    <script src="{% static 'js/components/Datatable.js' %}"></script>
+    
+    <script src="{% static 'js/views/HomeView.js' %}"></script>
+    <script src="{% static 'js/views/StateView.js' %}"></script>
+    <script src="{% static 'js/views/CityView.js' %}"></script>
+    <script src="{% static 'js/views/DistrictView.js' %}"></script>
+    <script src="{% static 'js/views/CompanyView.js' %}"></script>
+    
+    <script src="{% static 'js/router.js' %}"></script>
+    
+    <script src="{% static 'js/app.js' %}"></script>
 
     {% block extra_js %}
     {% endblock %}

@@ -140,8 +140,7 @@ const DataTable = {
               @change="onPageSizeChange" 
               class="form-select w-auto"
             >
-              <option v-for="size in pageSizeOptions" :key="size" :value="size">
-                {{ size }}
+              <option v-for="size in pageSizeOptions" :key="size" :value="size" v-text="size">
               </option>
             </select>
             <div v-if="isLoading" class="text-muted">Carregando...</div>
@@ -152,10 +151,10 @@ const DataTable = {
           <thead>
             <tr>
               <th v-for="col in columns" :key="col.key" @click="changeSort(col)" style="cursor: pointer;">
-                {{ col.label }}
+                <span v-text="col.label"></span>
                 <span v-if="col.sortable">
                   <small v-if="sortBy !== col.key">⇅</small>
-                  <small v-else>{{ sortDir === 'asc' ? '▲' : '▼' }}</small>
+                  <small v-else v-text="sortDir === 'asc' ? '▲' : '▼'"></small>
                 </span>
               </th>
             </tr>
@@ -164,7 +163,7 @@ const DataTable = {
             <tr v-for="item in rows" :key="item.id" style="cursor:pointer;" tabindex="0">
               <td v-for="col in columns" :key="col.key">
                 <slot :name="'cell-'+col.key" :item="item">
-                  {{ getNestedValue(item, col.displayKey || col.key) }}
+                  <span v-text="getNestedValue(item, col.displayKey || col.key)"></span>
                 </slot>
               </td>
             </tr>
@@ -175,14 +174,14 @@ const DataTable = {
         </table>
   
         <nav aria-label="Paginação" class="d-flex justify-content-between align-items-center">
-          <div>Mostrando página {{ page }} / {{ totalPages }}</div>
+          <div>Mostrando página <span v-text="page"></span> / <span v-text="totalPages"></span></div>
           <ul class="pagination mb-0">
             <li class="page-item" :class="{ disabled: page===1 }">
               <button class="page-link" @click="goToPage(page-1)">Anterior</button>
             </li>
             <li v-for="p in paginationPages" :key="p" class="page-item" :class="{ active: p===page, disabled: p==='...' }">
-              <button v-if="p !== '...'" class="page-link" @click="goToPage(p)">{{ p }}</button>
-              <span v-else class="page-link">{{ p }}</span>
+              <button v-if="p !== '...'" class="page-link" @click="goToPage(p)" v-text="p"></button>
+              <span v-else class="page-link" v-text="p"></span>
             </li>
             <li class="page-item" :class="{ disabled: page===totalPages }">
               <button class="page-link" @click="goToPage(page+1)">Próximo</button>
