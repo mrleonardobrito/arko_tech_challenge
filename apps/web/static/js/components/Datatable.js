@@ -4,6 +4,7 @@ const DataTable = {
     columns: { type: Array, default: () => [] },
     pageSize: { type: Number, default: 10 },
     fetchUrl: { type: String, required: true },
+    skeletonRows: { type: Number, default: 20 },
   },
   data() {
     return {
@@ -123,6 +124,11 @@ const DataTable = {
       this.page = n;
       this.requestData();
     },
+    getSkeletonWidth(col) {
+      const widths = ["w-25", "w-50", "w-75", "w-100"];
+      const index = col.key.length % widths.length;
+      return widths[index];
+    },
   },
   mounted() {
     if (!this.fetchUrl) return;
@@ -146,32 +152,53 @@ const DataTable = {
             <div v-if="isLoading" class="text-muted">Carregando...</div>
           </div>
         </div>
-  
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th v-for="col in columns" :key="col.key" @click="changeSort(col)" style="cursor: pointer;">
-                <span v-text="col.label"></span>
-                <span v-if="col.sortable">
-                  <small v-if="sortBy !== col.key">⇅</small>
-                  <small v-else v-text="sortDir === 'asc' ? '▲' : '▼'"></small>
-                </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in rows" :key="item.id" style="cursor:pointer;" tabindex="0">
-              <td v-for="col in columns" :key="col.key">
-                <slot :name="'cell-'+col.key" :item="item">
-                  <span v-text="getNestedValue(item, col.displayKey || col.key)"></span>
-                </slot>
-              </td>
-            </tr>
-            <tr v-if="rows.length === 0">
-              <td :colspan="columns.length" class="text-center">Nenhum registro</td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div v-if="isLoading">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th v-for="col in columns" :key="col.key" class="placeholder-glow">
+                  <div class="placeholder w-75 rounded"></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in skeletonRows" :key="row">
+                <td v-for="col in columns" :key="col.key" class="placeholder-glow">
+                  <div class="placeholder rounded" :class="getSkeletonWidth(col)"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-else>
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th v-for="col in columns" :key="col.key" @click="changeSort(col)" style="cursor: pointer;">
+                  <span v-text="col.label"></span>
+                  <span v-if="col.sortable">
+                    <small v-if="sortBy !== col.key">⇅</small>
+                    <small v-else v-text="sortDir === 'asc' ? '▲' : '▼'"></small>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in rows" :key="item.id" style="cursor:pointer;" tabindex="0">
+                <td v-for="col in columns" :key="col.key">
+                  <slot :name="'cell-'+col.key" :item="item">
+                    <span v-text="getNestedValue(item, col.displayKey || col.key)"></span>
+                  </slot>
+                </td>
+              </tr>
+              <tr v-if="rows.length === 0">
+                <td :colspan="columns.length" class="text-center">Nenhum registro</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
   
         <nav aria-label="Paginação" class="d-flex justify-content-between align-items-center">
           <div>Mostrando página <span v-text="page"></span> / <span v-text="totalPages"></span></div>
