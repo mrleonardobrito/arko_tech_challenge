@@ -7,34 +7,36 @@
 <div class="row">
     <div class="col">
         <h2>Empresas</h2>
-        <div class="table-responsive">
-            <table class="table table-striped" id="dataTable">
-                <thead>
-                    <tr>
-                        <th>CNPJ</th>
-                        <th>Razão Social</th>
-                        <th>Natureza Jurídica</th>
-                        <th>Capital Social</th>
-                        <th>Porte</th>
-                        <th>UF</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="6" class="text-center">Carregando...</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div id="company-app">
+            <data-table
+                fetch-url="/api/companies/"
+                :server-side="true"
+                :page-size="20"
+                :columns="columns"
+            ></data-table>
         </div>
-
-        <nav aria-label="Navegação de página">
-            <div id="pagination"></div>
-        </nav>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/api.js' %}"></script>
-<script src="{% static 'js/companies.js' %}"></script>
+<script src="{% static 'js/Datatable.js' %}"></script>
+<script>
+    const appCompanies = Vue.createApp({
+        components: { DataTable },
+        data() {
+            return {
+                columns: [
+                    { key: 'cnpj', label: 'CNPJ', sortable: true },
+                    { key: 'social_name', label: 'Razão Social', sortable: true },
+                    { key: 'juridical_nature', label: 'Natureza Jurídica', sortable: false },
+                    { key: 'social_capital', label: 'Capital Social', sortable: true },
+                    { key: 'company_size', label: 'Porte', sortable: true },
+                    { key: 'federative_entity', label: 'UF', sortable: true },
+                ],
+            };
+        },
+    });
+    appCompanies.mount('#company-app');
+</script>
 {% endblock %}

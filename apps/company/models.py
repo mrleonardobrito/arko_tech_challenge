@@ -24,3 +24,14 @@ class Company(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['cnpj'], name='unique_cnpj')
         ]
+        indexes = [
+            models.Index(fields=['social_name'],
+                         name='company_social_name_idx'),
+            models.Index(fields=['cnpj'], name='company_cnpj_idx'),
+            models.Index(fields=['federative_entity'],
+                         name='company_federative_entity_idx'),
+            models.Index(fields=['social_capital'],
+                         name='company_social_capital_idx'),
+            models.Index(fields=['company_size'],
+                         name='company_company_size_idx'),
+        ]

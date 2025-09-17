@@ -24,6 +24,24 @@ from .serializers import StateSerializer
                 type=int,
                 description='Quantidade de itens por página (padrão: 10, máximo: 100)',
                 required=False
+            ),
+            OpenApiParameter(
+                name='sort_by',
+                type=str,
+                description='Campo para ordenação (name, acronym)',
+                required=False
+            ),
+            OpenApiParameter(
+                name='sort_dir',
+                type=str,
+                description='Direção da ordenação (asc, desc)',
+                required=False
+            ),
+            OpenApiParameter(
+                name='query',
+                type=str,
+                description='Termo de busca (nome do estado, sigla)',
+                required=False
             )
         ]
     )
@@ -56,12 +74,34 @@ class StateViewSet(viewsets.GenericViewSet):
             raise InvalidPageSizeError(
                 'O tamanho da página deve ser um número inteiro')
 
-        states = list_states(page=page, page_size=page_size)
+        sort_by = request.query_params.get('sort_by')
+        sort_dir = request.query_params.get('sort_dir', 'asc')
+        query = request.query_params.get('query')
+
+        states = list_states(
+            page=page,
+            page_size=page_size,
+            sort_by=sort_by,
+            sort_dir=sort_dir,
+            query=query,
+        )
         serializer = self.get_serializer(states['results'], many=True)
+
+        def build_url(target_page: int | None):
+            if not target_page:
+                return None
+            params = [f'page={target_page}', f'page_size={page_size}']
+            if sort_by:
+                params.append(f'sort_by={sort_by}')
+            if sort_dir:
+                params.append(f'sort_dir={sort_dir}')
+            if query:
+                params.append(f'query={query}')
+            return f"/api/states/?{'&'.join(params)}"
 
         return Response({
             'count': states['total'],
-            'next': f'/api/states/?page={page + 1}&page_size={page_size}' if page < states['total_pages'] else None,
-            'previous': f'/api/states/?page={page - 1}&page_size={page_size}' if page > 1 else None,
+            'next': build_url(page + 1 if page < states['total_pages'] else None),
+            'previous': build_url(page - 1 if page > 1 else None),
             'results': serializer.data
         })

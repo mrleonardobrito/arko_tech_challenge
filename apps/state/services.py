@@ -1,14 +1,37 @@
 from django.db import DatabaseError as DjangoDatabaseError
+from django.db.models import Q
 from .models import State
 from apps.api.errors import DatabaseError
 
 
-def list_states(page=1, page_size=10):
+def list_states(
+    page: int = 1,
+    page_size: int = 10,
+    sort_by: str | None = None,
+    sort_dir: str = "asc",
+    query: str | None = None,
+):
     try:
-        queryset = State.objects.order_by('name')
+        queryset = State.objects.all()
+
+        if query:
+            ft = query.strip()
+            if ft:
+                queryset = queryset.filter(
+                    Q(name__icontains=ft) | Q(acronym__icontains=ft)
+                )
+
+        allowed_sorts = {
+            "name": "name",
+            "acronym": "acronym",
+        }
+        sort_field = allowed_sorts.get((sort_by or "").lower(), "name")
+        sort_prefix = "-" if str(sort_dir).lower() == "desc" else ""
+        queryset = queryset.order_by(f"{sort_prefix}{sort_field}")
+
         total = queryset.count()
         offset = (page - 1) * page_size
-        results = queryset[offset:offset+page_size]
+        results = queryset[offset: offset + page_size]
         return {
             'results': results,
             'total': total,

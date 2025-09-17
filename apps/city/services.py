@@ -1,11 +1,35 @@
 from django.db import DatabaseError as DjangoDatabaseError
+from django.db.models import Q
 from .models import City
 from apps.api.errors import DatabaseError
 
 
-def list_cities(page=1, page_size=10):
+def list_cities(
+    page: int = 1,
+    page_size: int = 10,
+    sort_by: str | None = None,
+    sort_dir: str = "asc",
+    query: str | None = None,
+):
     try:
-        queryset = City.objects.order_by('name')
+        queryset = City.objects.all()
+
+        if query:
+            ft = query.strip()
+            if ft:
+                queryset = queryset.filter(
+                    Q(name__icontains=ft) | Q(state__name__icontains=ft) | Q(
+                        state__acronym__icontains=ft)
+                )
+
+        allowed_sorts = {
+            "name": "name",
+            "state": "state__name",
+        }
+        sort_field = allowed_sorts.get((sort_by or "").lower(), "name")
+        sort_prefix = "-" if str(sort_dir).lower() == "desc" else ""
+        queryset = queryset.order_by(f"{sort_prefix}{sort_field}")
+
         total = queryset.count()
         offset = (page - 1) * page_size
         results = queryset[offset:offset+page_size]
