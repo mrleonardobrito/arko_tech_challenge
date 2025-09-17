@@ -1,27 +1,38 @@
 :root {
-  --bs-primary: #3b82f6;
-  --bs-secondary: #6b7280;
-  --bs-success: #22c55e;
-  --bs-info: #0ea5e9;
-  --bs-warning: #f59e0b;
-  --bs-danger: #ef4444;
-  --bs-light: #f8fafc;
-  --bs-dark: #1e293b;
-  --bs-skeleton: #e5e7eb;
-  --bs-skeleton-light: #d1d5db;
+  --bs-primary: #10b981; /* verde vibrante */
+  --bs-primary-hover: #059669; /* verde mais intenso no hover */
+  --bs-secondary: #6b7280; /* cinza suave */
+  --bs-success: #22c55e; /* verde para sucesso */
+  --bs-info: #06b6d4; /* ciano para info */
+  --bs-warning: #fbbf24; /* amarelo quente */
+  --bs-danger: #f87171; /* vermelho suave mas legível */
 
-  --bs-body-bg: #ffffff;
-  --bs-body-color: #1e293b;
-  --bs-border-color: #e5e7eb;
-  --bs-form-bg: #f8fafc;
-  --bs-primary-hover: #2563eb;
-  --bs-white: #ffffff;
-  --bs-placeholder-color: #9ca3af;
+  --bs-light: #1f2937; /* fundo escuro de componentes */
+  --bs-dark: #0f172a; /* quase preto para fundo principal */
+  --bs-body-bg: #0f172a; /* fundo principal */
+  --bs-body-color: #f1f5f9; /* texto claro */
+  --bs-border-color: #374151; /* bordas escuras */
+  --bs-form-bg: #1e293b; /* fundo de formulários */
+
+  --bs-skeleton: #4b5563; /* skeleton médio */
+  --bs-skeleton-light: #6b7280; /* skeleton mais claro */
+
+  --bs-white: #f1f5f9; /* texto branco ou contrastante */
+  --bs-placeholder-color: #94a3b8; /* placeholder mais legível em dark */
 }
 
 body {
-  background-color: var(--bs-body-bg);
-  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
+}
+
+/* Forçar aplicação do tema em todos os elementos */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--bs-body-bg) !important;
 }
 
 .app-header {
@@ -44,6 +55,18 @@ h4,
 h5,
 h6 {
   color: var(--bs-body-color) !important;
+}
+
+.display-4 {
+  color: var(--bs-white) !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.lead {
+  color: var(--bs-secondary) !important;
+  font-size: 1.25rem !important;
+  font-weight: 400 !important;
 }
 
 .text-muted {
@@ -226,4 +249,129 @@ h6 {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* Estilos específicos para cards */
+.card {
+  background-color: var(--bs-light) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.3s ease !important;
+}
+
+.card-body {
+  background-color: var(--bs-light) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.card-title {
+  color: var(--bs-body-color) !important;
+}
+
+.card-text {
+  color: var(--bs-secondary) !important;
+}
+
+/* Estilos para botões */
+.btn-primary {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-white) !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--bs-primary-hover) !important;
+  border-color: var(--bs-primary-hover) !important;
+  color: var(--bs-white) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(244, 114, 182, 0.3) !important;
+}
+
+.btn-primary:active {
+  background-color: var(--bs-primary-hover) !important;
+  border-color: var(--bs-primary-hover) !important;
+  transform: translateY(0) !important;
+}
+
+.btn-outline-primary {
+  color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-white) !important;
+}
+
+/* Estilos para containers e seções */
+.container,
+.container-fluid {
+  background-color: var(--bs-body-bg) !important;
+}
+
+.row {
+  background-color: transparent !important;
+}
+
+main {
+  background-color: var(--bs-body-bg) !important;
+  min-height: calc(100vh - 60px) !important;
+}
+
+#app {
+  background-color: var(--bs-body-bg) !important;
+  min-height: 100vh !important;
+}
+
+/* Estilos para links */
+a {
+  color: var(--bs-primary) !important;
+}
+
+a:hover {
+  color: var(--bs-primary-hover) !important;
+}
+
+/* Estilos para badges */
+.badge {
+  background-color: var(--bs-primary) !important;
+  color: var(--bs-white) !important;
+}
+
+/* Estilos para alertas */
+.alert {
+  background-color: var(--bs-light) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+/* Estilos para modais */
+.modal-content {
+  background-color: var(--bs-light) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.modal-header {
+  background-color: var(--bs-light) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+.modal-body {
+  background-color: var(--bs-light) !important;
+  color: var(--bs-body-color) !important;
+}
+
+.modal-footer {
+  background-color: var(--bs-light) !important;
+  border-color: var(--bs-border-color) !important;
 }
