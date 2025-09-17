@@ -26,3 +26,7 @@ db-migrate:
 run:
 	# $(MAKE) db-up
 	$(DJANGO) runserver $(PORT)
+
+install-dev:
+	$(PY) -m pip install -r requirements.txt
+	$(PY) -m pip freeze > requirements.txt

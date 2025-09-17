@@ -1,6 +1,7 @@
 asgiref==3.9.1
 attrs==25.3.0
 Django==5.2.5
+django-browser-reload==1.19.0
 djangorestframework==3.16.1
 drf-spectacular==0.28.0
 inflection==0.5.1
